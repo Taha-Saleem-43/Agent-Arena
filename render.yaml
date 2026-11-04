@@ -1,0 +1,18 @@
+# Free preview only. No disk, paid database, or paid compute is provisioned.
+services:
+  - type: web
+    name: agent-arena
+    runtime: node
+    plan: free
+    buildCommand: node --check server/http.cjs
+    startCommand: node server/render.cjs
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
+      - key: ARENA_STORAGE_MODE
+        value: ephemeral
+      - key: ARENA_ADMIN_TOKEN
+        generateValue: true
