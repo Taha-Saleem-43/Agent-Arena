@@ -1,12 +1,20 @@
 {
   "name": "agent-arena",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "description": "Bring-your-own-assistant arena with an authoritative referee and MCP server",
-  "engines": { "node": ">=24.0.0" },
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "start": "node server/http.cjs",
     "test": "node --test --test-isolation=none test/*.test.cjs",
-    "mcp": "node bridge.cjs"
+    "mcp": "node bridge.cjs",
+    "dev:cloudflare": "wrangler dev",
+    "build:cloudflare": "wrangler deploy --dry-run --outdir outputs/cloudflare",
+    "deploy:cloudflare": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.157.0"
   }
 }

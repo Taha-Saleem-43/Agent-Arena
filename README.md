@@ -66,6 +66,24 @@ Tests cover the engine, credential boundaries, locked seats, action validation, 
 
 ## Public hosting
 
+### Cloudflare Free deployment (current target)
+
+The `cloudflare/` entry point serves the same referee and MCP protocol in a Cloudflare Worker. A SQLite-backed Durable Object persists registrations, match state, receipts, and replays. Alarms advance overdue turns even when no browser is watching. Static assets are served from `dist/`. No model APIs, R2 buckets, paid databases, or paid-plan upgrade is required by this configuration. Free-plan request, duration, storage, and SQL-operation quotas still apply.
+
+`wrangler.jsonc` declares the Worker, static assets, and SQLite-backed Durable Object migration. Keep the `v1` migration and coordinator name stable after publishing; changing or deleting a namespace can lose access to its stored matches.
+
+1. Sign in to Cloudflare and use Workers & Pages to connect this GitHub repository.
+2. Set the build command to `npm run build:cloudflare` and deployment command to `npm run deploy:cloudflare` (or keep the dashboard's equivalent `npx wrangler deploy`). Use Node 24.
+3. Configure an encrypted Worker secret named `ARENA_ADMIN_TOKEN` with a random value of at least 32 characters. Do not add it to GitHub, build logs, or a public prompt. The site loads without the secret but match creation fails closed until configured.
+4. Deploy on the Workers Free plan. The application is served on the assigned `workers.dev` HTTPS domain; the tool endpoint is `/mcp` on that same domain. A custom domain is unnecessary.
+5. Enter the host creation key in Mission Control, create a match, then send one private invitation to each connected assistant.
+
+For CLI deployment, run `npm ci`, `npx wrangler login`, `npm run build:cloudflare`, `npx wrangler secret put ARENA_ADMIN_TOKEN`, and `npm run deploy:cloudflare`. Authentication and secret entry are handled outside the repository. CLI or dashboard authentication is required; the source configuration alone does not publish anything.
+
+The Cloudflare handler and storage adapter are tested independently of the Node HTTP server. Production verification must also check the live health endpoint, a full MCP match, and persistence across a new coordinator instance. The Node version remains available for local development with `npm start`.
+
+References: [Workers Free pricing](https://developers.cloudflare.com/workers/platform/pricing/), [Durable Objects pricing](https://developers.cloudflare.com/durable-objects/platform/pricing/), [SQLite storage API](https://developers.cloudflare.com/durable-objects/api/sqlite-storage-api/).
+
 ### Prepared Render Free preview
 
 `render.yaml` provisions one **Free** Node web service and a generated host creation key. It provisions no paid disk or database. Deploy this folder as the repository root, then use the blueprint. `server/render.cjs` picks up Render's assigned HTTPS URL and port automatically. The owner can retrieve `ARENA_ADMIN_TOKEN` from the service's environment settings and enter it in Mission Control; do not share it in a public prompt.
@@ -88,7 +106,7 @@ Enter the host creation key in Mission Control to create matches. It is not sent
 
 The Dockerfile includes no dependency installation. Build with `docker build -t agent-arena .`; run with a persistent `/data` mount and the environment above behind your HTTPS proxy. Container deployment has not been exercised here.
 
-The existing `.openai/hosting.json` identifies the earlier, unpublished static Sites project. This backend uses Node HTTP and SQLite and cannot be deployed as that static site or directly as a Cloudflare Worker. No cloud deployment or public exposure has been performed. Publishing only `dist/` would produce a broken live-game experience, so deploy the complete backend. A future Sites-native port requires a Worker-compatible transactional store, not in-memory state.
+The existing `.openai/hosting.json` identifies the earlier, unpublished static Sites project. The Node HTTP entry point cannot run as a static site. The Cloudflare entry point above uses a separate Worker-compatible storage adapter. Publishing only `dist/` would produce a broken live-game experience; deploy the complete Worker and its Durable Object binding.
 
 ## Files
 

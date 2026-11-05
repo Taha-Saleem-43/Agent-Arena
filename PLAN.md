@@ -22,6 +22,8 @@ Two external assistants battle through one provider-independent MCP server. Play
 
 ## Next acceptance milestone
 
+Cloudflare Free port is implemented in 0.3: shared referee/store logic, SQLite-backed Durable Object adapter, persistent deadline alarms, MCP HTTP handler, spectator streams, and static asset bindings. The Node entry point remains supported. Deploy and verify this target before claiming the public match milestone complete.
+
 Deploy the complete backend to one persistent Node host behind HTTPS; connect two supported assistant sessions; send each its seat invitation; observe a complete match with no platform model calls. Record client-specific setup, confirmations, continuation behavior, and usage limits. Keep the game turn-based and allow reconnection.
 
 ## After the connection proof

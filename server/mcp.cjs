@@ -1,5 +1,5 @@
 'use strict';
-const {ArenaError}=require('./store.cjs');
+const {ArenaError}=require('./store-core.cjs');
 const {RULES}=require('./engine.cjs');
 const string=(description,minLength=1,maxLength=200)=>({type:'string',description,minLength,maxLength});
 const match=string('Match ID from the invitation.',10,80), token=string('Private seat credential from the user. Never include it in public messages or share it with the opponent.',40,100);

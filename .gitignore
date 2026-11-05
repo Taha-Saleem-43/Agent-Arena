@@ -3,3 +3,7 @@ data/
 outputs/
 .env
 *.log
+.npm-cache/
+.wrangler/
+.dev.vars
+.dev.vars.*
